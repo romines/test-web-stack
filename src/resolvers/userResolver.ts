@@ -1,31 +1,25 @@
-import { Query, Resolver, Mutation, Arg } from 'type-graphql'
-import { User, UserInput } from '../schemas/User'
-import { v4 as uuidv4 } from 'uuid'
+import { Query, Resolver, Mutation, Arg } from 'type-graphql';
+import { User, UserInput } from '../models/User';
 
-@Resolver((of) => User)
+@Resolver((_of) => User)
 export class UserResolver {
-  private users: User[] = []
-
-  @Query((returns) => [User], { nullable: true })
+  @Query(() => [User])
   async getUsers(): Promise<User[]> {
-    return this.users
+    return User.find();
   }
 
-  @Mutation((returns) => User)
-  async addUser(
-    @Arg('userInput') { name, dob, address, description }: UserInput
-  ): Promise<User> {
-    const user = {
-      id: uuidv4(),
+  @Mutation((_returns) => User)
+  async addUser(@Arg('userInput') { name, dob, address, description }: UserInput): Promise<User> {
+    const user = User.create({
       name,
       dob,
       address,
       description,
       createdAt: new Date(),
       updatedAt: new Date(),
-    }
+    });
 
-    this.users.push(user)
-    return user
+    await user.save();
+    return user;
   }
 }
