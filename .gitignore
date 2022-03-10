@@ -3,3 +3,4 @@ client/node_modules/
 npm-debug.log*
 schema.gql
 db.sqlite3
+.vim

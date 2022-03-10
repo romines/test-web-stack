@@ -5,6 +5,7 @@ import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
 
 import { UserResolver } from './resolvers/userResolver';
+import { PhotoResolver } from './resolvers/photoResolver';
 
 async function main() {
   await createConnection({
@@ -14,7 +15,7 @@ async function main() {
     synchronize: true,
   });
   const schema = await buildSchema({
-    resolvers: [UserResolver],
+    resolvers: [UserResolver, PhotoResolver],
     emitSchemaFile: true,
   });
 

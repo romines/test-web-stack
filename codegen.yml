@@ -1,0 +1,10 @@
+schema: './schema.gql'
+documents: 'client/src/**/*.tsx'
+generates:
+  src/generated/graphql.ts:
+    config:
+      withHooks: true
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apolloperations
