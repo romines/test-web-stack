@@ -5,7 +5,7 @@ import { Photo } from '../models/Photo';
 @Resolver((_of) => User)
 export class UserResolver {
   @Query(() => [User])
-  async getUsers(): Promise<User[]> {
+  async users(): Promise<User[]> {
     return User.find();
   }
 

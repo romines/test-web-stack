@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@graphql-codegen/typed-document-node": "^2.2.7",
     "@graphql-codegen/typescript": "^2.4.7",
     "@graphql-codegen/typescript-operations": "^2.3.4",
     "@graphql-codegen/typescript-react-apollo": "^3.2.10",

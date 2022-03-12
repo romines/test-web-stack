@@ -1,10 +1,11 @@
-schema: './schema.gql'
-documents: 'client/src/**/*.tsx'
+schema: 'http://localhost:4000/graphql'
+documents: 'client/src/graphql/query.ts'
 generates:
-  src/generated/graphql.ts:
+  client/src/graphql/_generated.tsx:
     config:
       withHooks: true
     plugins:
-      - typescript
-      - typescript-operations
-      - typescript-react-apolloperations
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+    overwrite: true

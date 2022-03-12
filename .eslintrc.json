@@ -12,5 +12,6 @@
     "browser": true,
     "es2021": true
   },
-  "root": true
+  "root": true,
+  "ignorePatterns": ["client/src/graphql/_generated.tsx"]
 }

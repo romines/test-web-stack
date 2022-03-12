@@ -34,5 +34,6 @@
     "simple-import-sort/exports": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off"
   },
-  "root": true
+  "root": true,
+  "ignorePatterns": "src/graphql/_generated.tsx"
 }
