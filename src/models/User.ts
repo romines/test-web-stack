@@ -71,6 +71,6 @@ export class UpdateUserInput implements Partial<NewUserInput> {
   @Field({ nullable: true })
   description?: string | null;
 
-  @Field({ nullable: true })
+  @Field()
   photoId?: string | null;
 }

@@ -24,6 +24,7 @@
     "class-validator": "^0.13.2",
     "express": "^4.17.3",
     "reflect-metadata": "^0.1.13",
+    "sass": "^1.42.1",
     "sqlite3": "^5.0.2",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.44"

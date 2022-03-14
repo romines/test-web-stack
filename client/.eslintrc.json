@@ -22,7 +22,7 @@
   "plugins": ["react", "@typescript-eslint", "simple-import-sort"],
   "rules": {
     "prettier/prettier": [
-      "error",
+      "warn",
       {
         "trailingComma": "es5",
         "singleQuote": true,
@@ -30,9 +30,11 @@
         "semi": true
       }
     ],
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    "simple-import-sort/imports": "warn",
+    "simple-import-sort/exports": "warn",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off"
   },
   "root": true,
   "ignorePatterns": "src/graphql/_generated.tsx"

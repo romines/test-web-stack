@@ -70,7 +70,7 @@ export type UpdateUserInput = {
   description?: InputMaybe<Scalars['String']>;
   dob?: InputMaybe<Scalars['DateTime']>;
   name?: InputMaybe<Scalars['String']>;
-  photoId?: InputMaybe<Scalars['String']>;
+  photoId: Scalars['String'];
 };
 
 export type User = {
@@ -88,7 +88,7 @@ export type User = {
 export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', name: string, id: string, dob: string, address: string, description: string, photo?: { __typename?: 'Photo', url: string } | null }> };
+export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', name: string, id: string, dob: string, address: string, description: string, createdAt: any, updatedAt: any, photo?: { __typename?: 'Photo', url: string, id: string } | null }> };
 
 export type AddUserMutationVariables = Exact<{
   userInput: NewUserInput;
@@ -116,7 +116,10 @@ export const GetUsersDocument = gql`
     description
     photo {
       url
+      id
     }
+    createdAt
+    updatedAt
   }
 }
     `;

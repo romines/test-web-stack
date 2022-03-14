@@ -10,7 +10,10 @@ export const GET_USERS = gql`
       description
       photo {
         url
+        id
       }
+      createdAt
+      updatedAt
     }
   }
 `;
