@@ -11,7 +11,12 @@ export default function SearchBar({ updateUrl, initialQuery }: IProps) {
   };
   return (
     <div>
-      <input onChange={(e) => handleChange(e)} value={initialQuery} />
+      <input
+        placeholder="Search..."
+        onChange={(e) => handleChange(e)}
+        value={initialQuery}
+        tabIndex={1}
+      />
     </div>
   );
 }

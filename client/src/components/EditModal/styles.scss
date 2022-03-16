@@ -1,0 +1,34 @@
+.edit-modal-container {
+  display: none;
+  .overlay {
+    position: fixed;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+  }
+  .edit-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-200%, -50%);
+    width: 1328px;
+    height: 725px;
+    background: #F8F8F8;
+    border-radius: 8px;
+    transition: transform .85s ease;
+  }
+  &.show {
+    display: block;
+    .edit-modal.reveal {
+      transform: translate(-50%, -50%);
+    }
+  }
+  h1 {
+    font-weight: 300;
+    font-size: 48px;
+    line-height: 60px;
+    margin: 64px;
+  }
+
+}

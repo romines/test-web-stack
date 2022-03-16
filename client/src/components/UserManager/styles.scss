@@ -1,10 +1,52 @@
 .user-manager {
   height: 100%;
-  h1 {
-    font-size: 48px;
-    margin-top: 0;
+  background-color: #F8F8F8;
+
+  & > .inner-container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 183px 236px;
   }
+
+  .top-bar {
+    display: flex;
+    max-width: 1328px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 64px;
+    h1 {
+      flex-shrink: 0;
+      font-weight: 300;
+      display: inline;
+      font-size: 48px;
+      margin: 0;
+    }
+    input {
+      background: #FFFFFF;
+      width: 400px;
+      height: 64px;
+      padding: 0 16px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      font-family: 'Source Sans Pro';
+      font-style: normal;
+      font-size: 24px;
+      font-weight: 300;
+      line-height: 30px;
+      font-weight: 300;
+      ::placeholder {
+        font-weight: 300px;
+      }
+    }
+  }
+
   .card-container {
     display: flex;
+    flex-wrap: wrap;
+    max-width: 1328px;
+    gap: 64px;
+    justify-content: space-around;
+    color: rgba(0, 0, 0, 0.4);
   }
+
 }

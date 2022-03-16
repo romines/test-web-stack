@@ -1,6 +1,25 @@
 .user-card {
   height: 336px;
-  width: 400px;
+  flex-basis: 400px;
+  flex-shrink: 0;
   border-radius: 8px;
   background: #FFFFFF;
+  &:hover {
+    filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1));
+    .inner-container {
+      .edit-icon {
+        display: inline;
+      }
+    } 
+  }
+  .inner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    .edit-icon {
+      margin-top: .8em;
+      margin-right: .8em;
+      display: none;
+    }
+  }
 }

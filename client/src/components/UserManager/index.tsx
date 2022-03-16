@@ -1,11 +1,16 @@
 import './styles.scss';
 
-import SearchBar from 'components/SearchBar';
-import UserCard from 'components/UserCard';
+import { EditModal, SearchBar, UserCard } from 'components';
 import { useGetUsersQuery } from 'graphql/_generated';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+// interface Iprops {
+//   onModalToggle: () => void;
+// }
+
 export default function UserManager() {
+  const [showModal, setShowModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') ?? undefined;
   const updateUrl = (userQuery: string): void => {
@@ -22,20 +27,28 @@ export default function UserManager() {
   } else if (error) {
     return <div>oops: {error.message}</div>;
   }
+  const beginEditUser = () => {
+    setShowModal(true);
+  };
 
   return (
     <div className="user-manager">
-      <h1>Users list</h1>
+      <div className="inner-container">
+        <div className="top-bar">
+          <h1>Users list</h1>
+          <SearchBar updateUrl={updateUrl} initialQuery={initialQuery} />
+        </div>
 
-      <SearchBar updateUrl={updateUrl} initialQuery={initialQuery} />
-      <div className="card-container">
-        {data?.users?.map((user) => (
-          <UserCard user={user} key={user.id} />
-        ))}
+        <div className="card-container">
+          {data?.users?.map((user, i) => (
+            <UserCard user={user} key={user.id} tabIndex={i + 2} beginEditUser={beginEditUser} />
+          ))}
+        </div>
+
+        <div>Search term: {searchParams.get('q')}</div>
+        <div>Current page: {pageNumber}</div>
       </div>
-
-      <div>Search term: {searchParams.get('q')}</div>
-      <div>Current page: {pageNumber}</div>
+      <EditModal showModal={showModal} />
     </div>
   );
 }
