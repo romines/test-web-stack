@@ -30,6 +30,7 @@
         "semi": true
       }
     ],
+    "no-debugger": "warn",
     "simple-import-sort/imports": "warn",
     "simple-import-sort/exports": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",

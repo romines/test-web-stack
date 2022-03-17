@@ -1,16 +1,12 @@
 import './styles.scss';
 
-import { EditModal, SearchBar, UserCard } from 'components';
+import { Modal, SearchBar, UserCard, UserForm } from 'components';
 import { useGetUsersQuery } from 'graphql/_generated';
+import { User } from 'graphql/_generated';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-// interface Iprops {
-//   onModalToggle: () => void;
-// }
-
 export default function UserManager() {
-  const [showModal, setShowModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') ?? undefined;
   const updateUrl = (userQuery: string): void => {
@@ -22,33 +18,45 @@ export default function UserManager() {
 
   const { data, loading, error } = useGetUsersQuery();
 
+  const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
+  const [currentlyEditingUser] = data?.users.filter(
+    (u: User) => u.id === currentlyEditingUserId
+  ) ?? [null];
+
   if (loading) {
     return <div>loading...</div>;
   } else if (error) {
     return <div>oops: {error.message}</div>;
   }
-  const beginEditUser = () => {
-    setShowModal(true);
-  };
 
   return (
     <div className="user-manager">
       <div className="inner-container">
         <div className="top-bar">
-          <h1>Users list</h1>
+          <h1>Users</h1>
           <SearchBar updateUrl={updateUrl} initialQuery={initialQuery} />
         </div>
 
         <div className="card-container">
           {data?.users?.map((user, i) => (
-            <UserCard user={user} key={user.id} tabIndex={i + 2} beginEditUser={beginEditUser} />
+            <UserCard
+              user={user}
+              key={user.id}
+              tabIndex={i + 2}
+              setCurrentlyEditingUserId={setCurrentlyEditingUserId}
+            />
           ))}
         </div>
 
         <div>Search term: {searchParams.get('q')}</div>
         <div>Current page: {pageNumber}</div>
       </div>
-      <EditModal showModal={showModal} />
+      <Modal
+        showModal={!!currentlyEditingUserId}
+        closeModal={() => setCurrentlyEditingUserId(null)}
+      >
+        {currentlyEditingUser && <UserForm user={currentlyEditingUser} />}
+      </Modal>
     </div>
   );
 }
