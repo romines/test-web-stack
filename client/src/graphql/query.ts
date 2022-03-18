@@ -47,3 +47,12 @@ export const UPDATE_USER = gql`
     }
   }
 `;
+
+export const GET_PHOTOS = gql`
+  query GetPhotos {
+    getPhotos {
+      url
+      id
+    }
+  }
+`;

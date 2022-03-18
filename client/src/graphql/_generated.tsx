@@ -105,6 +105,11 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, name: string, dob: string, address: string, description: string, photo?: { __typename?: 'Photo', url: string } | null } };
 
+export type GetPhotosQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPhotosQuery = { __typename?: 'Query', getPhotos: Array<{ __typename?: 'Photo', url: string, id: string }> };
+
 
 export const GetUsersDocument = gql`
     query GetUsers {
@@ -231,3 +236,38 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetPhotosDocument = gql`
+    query GetPhotos {
+  getPhotos {
+    url
+    id
+  }
+}
+    `;
+
+/**
+ * __useGetPhotosQuery__
+ *
+ * To run a query within a React component, call `useGetPhotosQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPhotosQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPhotosQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetPhotosQuery(baseOptions?: Apollo.QueryHookOptions<GetPhotosQuery, GetPhotosQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPhotosQuery, GetPhotosQueryVariables>(GetPhotosDocument, options);
+      }
+export function useGetPhotosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPhotosQuery, GetPhotosQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPhotosQuery, GetPhotosQueryVariables>(GetPhotosDocument, options);
+        }
+export type GetPhotosQueryHookResult = ReturnType<typeof useGetPhotosQuery>;
+export type GetPhotosLazyQueryHookResult = ReturnType<typeof useGetPhotosLazyQuery>;
+export type GetPhotosQueryResult = Apollo.QueryResult<GetPhotosQuery, GetPhotosQueryVariables>;

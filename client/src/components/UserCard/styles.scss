@@ -8,18 +8,61 @@
     filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.1));
     .inner-container {
       .edit-icon {
-        display: inline;
+        visibility: visible;
       }
+      .name-row .created { visibility: visible;}
     } 
   }
-  .inner-container {
+  .top-bar {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    margin-bottom: 9px;
     .edit-icon {
       margin-top: .8em;
       margin-right: .8em;
-      display: none;
+      visibility: hidden;
     }
+  }
+
+  .photo-container {
+    width: 168px;
+    height: 168px;
+    margin-bottom: 24px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: hidden;
+    border-radius: 50%;
+    img {
+      display: inline;
+      margin: 0 auto;
+      min-width: 168px;
+      height: 100%;
+      width: auto;
+    }
+  }
+  .name-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 20px;
+    margin: 8px 32px;
+    .name {
+      font-weight: 600;
+      font-size: 21px;
+      line-height: 26px;
+      text-transform: uppercase;
+    }
+    .created {
+      visibility: hidden;
+      .created-date {
+        color: #b01e1e;
+      }
+    }
+  }
+  .description {
+    margin: 0 32px;
   }
 }

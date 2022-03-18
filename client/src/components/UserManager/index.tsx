@@ -1,7 +1,7 @@
 import './styles.scss';
 
-import { Modal, SearchBar, UserCard, UserForm } from 'components';
-import { useGetUsersQuery } from 'graphql/_generated';
+import { Modal, SearchBar, UserCard, UserFields, UserForm } from 'components';
+import { useGetPhotosQuery, useGetUsersQuery } from 'graphql/_generated';
 import { User } from 'graphql/_generated';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -16,19 +16,28 @@ export default function UserManager() {
   const limit = searchParams.get('limit');
   const pageNumber = offset && limit ? parseInt(offset) / parseInt(limit) + 1 : 'one';
 
-  const { data, loading, error } = useGetUsersQuery();
+  const { data: userData, loading: usersLoading, error: usersError } = useGetUsersQuery();
+  const { data: photoData, loading: photosLoading, error: photosError } = useGetPhotosQuery();
 
   const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
-  const [currentlyEditingUser] = data?.users.filter(
+  const [currentlyEditingUser] = userData?.users.filter(
     (u: User) => u.id === currentlyEditingUserId
   ) ?? [null];
 
-  if (loading) {
+  const updateUser = ({ name, address, description }: UserFields) => {
+    console.log({ name, address, description });
+    setCurrentlyEditingUserId(null);
+  };
+
+  if (usersLoading || photosLoading) {
     return <div>loading...</div>;
-  } else if (error) {
-    return <div>oops: {error.message}</div>;
+  } else if (usersError || photosError) {
+    return (
+      <div>oops: {[usersError?.message, photosError?.message].filter(Boolean).join(', ')}</div>
+    );
   }
 
+  const photos = photoData?.getPhotos.map(({ url }) => url) || [];
   return (
     <div className="user-manager">
       <div className="inner-container">
@@ -38,9 +47,10 @@ export default function UserManager() {
         </div>
 
         <div className="card-container">
-          {data?.users?.map((user, i) => (
+          {userData?.users?.map((user, i) => (
             <UserCard
               user={user}
+              photo={photos[i]}
               key={user.id}
               tabIndex={i + 2}
               setCurrentlyEditingUserId={setCurrentlyEditingUserId}
@@ -55,7 +65,13 @@ export default function UserManager() {
         showModal={!!currentlyEditingUserId}
         closeModal={() => setCurrentlyEditingUserId(null)}
       >
-        {currentlyEditingUser && <UserForm user={currentlyEditingUser} />}
+        {currentlyEditingUser && (
+          <UserForm
+            user={currentlyEditingUser}
+            updateUser={updateUser}
+            cancel={() => setCurrentlyEditingUserId(null)}
+          />
+        )}
       </Modal>
     </div>
   );
