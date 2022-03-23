@@ -1,6 +1,6 @@
 import './styles.scss';
 
-import { Modal, SearchBar, UserCard, UserFields, UserForm } from 'components';
+import { Modal, SearchBar, UserCard, UserFields, UserForm, UserLocation } from 'components';
 import { useGetPhotosQuery, useGetUsersQuery } from 'graphql/_generated';
 import { User } from 'graphql/_generated';
 import { useState } from 'react';
@@ -66,11 +66,14 @@ export default function UserManager() {
         closeModal={() => setCurrentlyEditingUserId(null)}
       >
         {currentlyEditingUser && (
-          <UserForm
-            user={currentlyEditingUser}
-            updateUser={updateUser}
-            cancel={() => setCurrentlyEditingUserId(null)}
-          />
+          <div className="edit-container">
+            <UserLocation user={currentlyEditingUser} />
+            <UserForm
+              user={currentlyEditingUser}
+              updateUser={updateUser}
+              cancel={() => setCurrentlyEditingUserId(null)}
+            />
+          </div>
         )}
       </Modal>
     </div>

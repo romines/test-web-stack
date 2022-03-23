@@ -1,6 +1,7 @@
 import './styles.scss';
 
 import { User } from 'graphql/_generated';
+import { useEffect, useRef } from 'react';
 
 import { UserFields, userKeys } from '..';
 
@@ -11,6 +12,13 @@ interface IProps {
 }
 
 export default function UserForm({ user, updateUser, cancel }: IProps) {
+  // grab focus for purposes of keyboard nav
+  const firstInputRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+
+  useEffect(() => {
+    firstInputRef.current && firstInputRef.current.focus();
+  });
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
@@ -22,7 +30,7 @@ export default function UserForm({ user, updateUser, cancel }: IProps) {
     <form className="user-form" onSubmit={handleSubmit}>
       <div className="form-group">
         <label htmlFor="name">Name</label>
-        <input type="text" name="name" defaultValue={user.name} />
+        <input type="text" name="name" defaultValue={user.name} ref={firstInputRef} />
       </div>
       <div className="form-group">
         <label htmlFor="address">Address</label>

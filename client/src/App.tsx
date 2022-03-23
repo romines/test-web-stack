@@ -1,8 +1,7 @@
 import './App.scss';
 
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
-
-import { UserManager } from './components';
+import { UserManager } from 'components';
 
 const client = new ApolloClient({
   uri: 'http://localhost:4000/graphql',
