@@ -19,35 +19,58 @@ import { Status, Wrapper } from '@googlemaps/react-wrapper';
 import { isLatLngLiteral } from '@googlemaps/typescript-guards';
 import { createCustomEqual } from 'fast-equals';
 import { User } from 'graphql/_generated';
-import * as React from 'react';
+import React, { Dispatch, useEffect, useRef, useState } from 'react';
 
 const render = (status: Status) => {
   return <h1>{status}</h1>;
 };
 
 interface IProps {
-  user: User;
+  address: string | null;
 }
 
-export default function UserLocation({ user }: IProps) {
+export default function UserLocation({ address }: IProps) {
   // useEffect . . . on user location change, setCenter after call to google.maps.Geocoder
+  //
+  //
+  //
+  const [geocoder, setGeocoder] = useState<google.maps.Geocoder>();
+  const [map, setMap] = useState<google.maps.Map>();
+
+  //
+  //
+  //
+  //
   // [START maps_react_map_component_app_state]
-  const [clicks, setClicks] = React.useState<google.maps.LatLng[]>([]);
-  const [zoom, setZoom] = React.useState(3); // initial zoom
-  const [center, setCenter] = React.useState<google.maps.LatLngLiteral>({
+  const [clicks, setClicks] = useState<google.maps.LatLng[]>([]);
+  const [zoom, setZoom] = useState(7); // initial zoom
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>({
     lat: 0,
     lng: 0,
   });
 
-  const onClick = (e: google.maps.MapMouseEvent) => {
+  useEffect(() => {
+    console.log(address)
+    if (!address || address?.length < 3) return;
+    geocoder?.geocode({ address: address }, (results, status) => {
+      if (!map || !results?.length) {
+        console.log(map);
+        console.log(results);
+        return;
+      }
+      if (status == window.google.maps.GeocoderStatus.OK) {
+        console.log('GeocoderStatus.OK . . .');
+        setCenter(results[0].geometry.location.toJSON()); //center the map over the result
+      }
+    });
+  }, [address, geocoder, map]);
 
-    debugger;
+  const onClick = (e: google.maps.MapMouseEvent) => {
     // avoid directly mutating state
     setClicks([...clicks, e.latLng!]);
   };
 
   const onIdle = (m: google.maps.Map) => {
-    console.log('onIdle');
     setZoom(m.getZoom()!);
     setCenter(m.getCenter()!.toJSON());
   };
@@ -105,12 +128,11 @@ export default function UserLocation({ user }: IProps) {
           onClick={onClick}
           onIdle={onIdle}
           zoom={zoom}
+          map={map}
+          setGeocoder={setGeocoder}
+          setMap={setMap}
           style={{ flexGrow: '1', height: '100%' }}
-        >
-          {clicks.map((latLng, i) => (
-            <Marker key={i} position={latLng} />
-          ))}
-        </Map>
+        />
       </Wrapper>
       {/* Basic form for controlling center and zoom of map. */}
       {form}
@@ -122,18 +144,21 @@ interface MapProps extends google.maps.MapOptions {
   style: { [key: string]: string };
   onClick?: (e: google.maps.MapMouseEvent) => void;
   onIdle?: (map: google.maps.Map) => void;
+  map: google.maps.Map | undefined;
+  setGeocoder: Dispatch<google.maps.Geocoder>;
+  setMap: Dispatch<google.maps.Map>;
 }
 
-const Map: React.FC<MapProps> = ({ onClick, onIdle, children, style, ...options }) => {
+const Map = ({ onClick, onIdle, map, setGeocoder, setMap, style, ...options }: MapProps) => {
   // [START maps_react_map_component_add_map_hooks]
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [map, setMap] = React.useState<google.maps.Map>();
+  const ref = useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (ref.current && !map) {
       setMap(new window.google.maps.Map(ref.current, {}));
+      setGeocoder(new window.google.maps.Geocoder());
     }
-  }, [ref, map]);
+  }, [ref, map, setGeocoder, setMap]);
   // [END maps_react_map_component_add_map_hooks]
 
   // [START maps_react_map_component_options_hook]
@@ -147,7 +172,7 @@ const Map: React.FC<MapProps> = ({ onClick, onIdle, children, style, ...options 
   // [END maps_react_map_component_options_hook]
 
   // [START maps_react_map_component_event_hooks]
-  React.useEffect(() => {
+  useEffect(() => {
     if (map) {
       ['click', 'idle'].forEach((eventName) => google.maps.event.clearListeners(map, eventName));
 
@@ -166,43 +191,10 @@ const Map: React.FC<MapProps> = ({ onClick, onIdle, children, style, ...options 
   return (
     <>
       <div ref={ref} style={style} />
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          // set the map prop on the child component
-          return React.cloneElement(child, { map });
-        }
-      })}
     </>
   );
   // [END maps_react_map_component_return]
 };
-
-// [START maps_react_map_marker_component]
-const Marker: React.FC<google.maps.MarkerOptions> = (options) => {
-  const [marker, setMarker] = React.useState<google.maps.Marker>();
-
-  React.useEffect(() => {
-    if (!marker) {
-      setMarker(new google.maps.Marker());
-    }
-
-    // remove marker from map on unmount
-    return () => {
-      if (marker) {
-        marker.setMap(null);
-      }
-    };
-  }, [marker]);
-
-  React.useEffect(() => {
-    if (marker) {
-      marker.setOptions(options);
-    }
-  }, [marker, options]);
-
-  return null;
-};
-// [END maps_react_map_marker_component]
 
 const deepCompareEqualsForMaps = createCustomEqual((deepEqual) => (a: any, b: any) => {
   if (
@@ -221,7 +213,7 @@ const deepCompareEqualsForMaps = createCustomEqual((deepEqual) => (a: any, b: an
 });
 
 function useDeepCompareMemoize(value: any) {
-  const ref = React.useRef();
+  const ref = useRef();
 
   if (!deepCompareEqualsForMaps(value, ref.current)) {
     ref.current = value;
@@ -231,5 +223,5 @@ function useDeepCompareMemoize(value: any) {
 }
 
 function useDeepCompareEffectForMaps(callback: React.EffectCallback, dependencies: any[]) {
-  React.useEffect(callback, dependencies.map(useDeepCompareMemoize));
+  useEffect(callback, dependencies.map(useDeepCompareMemoize));
 }

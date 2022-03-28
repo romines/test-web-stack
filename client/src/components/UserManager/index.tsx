@@ -3,7 +3,7 @@ import './styles.scss';
 import { Modal, SearchBar, UserCard, UserFields, UserForm, UserLocation } from 'components';
 import { useGetPhotosQuery, useGetUsersQuery } from 'graphql/_generated';
 import { User } from 'graphql/_generated';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export default function UserManager() {
@@ -20,6 +20,7 @@ export default function UserManager() {
   const { data: photoData, loading: photosLoading, error: photosError } = useGetPhotosQuery();
 
   const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
+  const [userAddress, setUserAddress] = useState<string | null>(null);
   const [currentlyEditingUser] = userData?.users.filter(
     (u: User) => u.id === currentlyEditingUserId
   ) ?? [null];
@@ -28,6 +29,12 @@ export default function UserManager() {
     console.log({ name, address, description });
     setCurrentlyEditingUserId(null);
   };
+
+  useEffect(() => {
+    if (currentlyEditingUserId) {
+      setUserAddress(currentlyEditingUser?.address as string);
+    }
+  }, [currentlyEditingUserId, currentlyEditingUser?.address]);
 
   if (usersLoading || photosLoading) {
     return <div>loading...</div>;
@@ -67,10 +74,11 @@ export default function UserManager() {
       >
         {currentlyEditingUser && (
           <div className="edit-container">
-            <UserLocation user={currentlyEditingUser} />
+            <UserLocation address={userAddress} />
             <UserForm
               user={currentlyEditingUser}
               updateUser={updateUser}
+              setUserAddress={setUserAddress}
               cancel={() => setCurrentlyEditingUserId(null)}
             />
           </div>
