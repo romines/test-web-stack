@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_USERS = gql`
-  query GetUsers($search: String) {
-    users(search: $search) {
+  query GetUsers($search: String, $page: Float!) {
+    users(search: $search, page: $page) {
       name
       id
       dob

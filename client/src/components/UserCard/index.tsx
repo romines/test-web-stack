@@ -2,7 +2,7 @@ import './styles.scss';
 
 import { format } from 'date-fns';
 import { User } from 'graphql/_generated';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 
 import editIcon from './edit_icon.svg';
 
@@ -11,12 +11,26 @@ interface IProps {
   photo: string;
   tabIndex: number;
   setCurrentlyEditingUserId: Dispatch<SetStateAction<string | null>>;
+  scrollTo: boolean;
 }
 
-export default function UserCard({ user, photo, tabIndex, setCurrentlyEditingUserId }: IProps) {
+export default function UserCard({
+  user,
+  photo,
+  tabIndex,
+  setCurrentlyEditingUserId,
+  scrollTo,
+}: IProps) {
   const onEditClick = () => {
     setCurrentlyEditingUserId(user.id);
   };
+
+  const containerRef = useRef() as React.MutableRefObject<HTMLDivElement>;
+  useEffect(() => {
+    if (scrollTo && containerRef.current) {
+      containerRef.current.scrollIntoView();
+    }
+  }, [scrollTo]);
 
   // allow modal launch with enter key
   const handleEnterKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -35,7 +49,12 @@ export default function UserCard({ user, photo, tabIndex, setCurrentlyEditingUse
   const formattedDate = format(new Date(user.createdAt), 'dd MMM yyyy');
 
   return (
-    <div className="user-card" tabIndex={tabIndex} onKeyDown={(e) => handleEnterKeyDown(e)}>
+    <div
+      className="user-card"
+      tabIndex={tabIndex}
+      onKeyDown={(e) => handleEnterKeyDown(e)}
+      ref={containerRef}
+    >
       <div className="inner-container">
         <div className="top-bar">
           <img src={editIcon} alt="Edit user" className="edit-icon" onClick={onEditClick} />

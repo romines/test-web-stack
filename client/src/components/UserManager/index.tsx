@@ -6,24 +6,39 @@ import { User } from 'graphql/_generated';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+export interface SearchParams {
+  q?: string;
+  page?: number;
+}
+
 export default function UserManager() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') ?? '';
-  const updateUrl = (userQuery: string): void => {
-    setSearchParams({ q: userQuery });
+  const updateUrl = (updatedSearchParams: SearchParams): void => {
+    setSearchParams({ ...searchParams, ...updatedSearchParams });
   };
-  const offset = searchParams.get('offset');
-  const limit = searchParams.get('limit');
+  const page = parseInt(searchParams.get('page') ?? '1');
   const searchUsersQuery = searchParams.get('q');
-  const pageNumber = offset && limit ? parseInt(offset) / parseInt(limit) + 1 : 'one';
 
   const {
     data: userData,
     loading: usersLoading,
     error: usersError,
-  } = useGetUsersQuery(searchUsersQuery ? { variables: { search: searchUsersQuery } } : {});
+  } = useGetUsersQuery({ variables: { search: searchUsersQuery, page } });
   const { data: photoData, loading: photosLoading, error: photosError } = useGetPhotosQuery();
   const photos = photoData?.getPhotos.map(({ url }) => url) || [];
+
+  const shouldScrollTo = (i: number): boolean => {
+    // scroll the last user card into view in order to save users place on page reload
+    // (disable for fist page load and around filter/search)
+    return !!(
+      userData &&
+      userData?.users?.length !== 6 &&
+      i === userData?.users?.length - 1 &&
+      document.activeElement?.id !== 'userSearch' &&
+      !searchUsersQuery
+    );
+  };
 
   const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
   const [userAddress, setUserAddress] = useState<string | null>(null);
@@ -43,9 +58,7 @@ export default function UserManager() {
   }, [currentlyEditingUserId, currentlyEditingUser?.address]);
 
   if (usersError || photosError) {
-    return (
-      <div>oops: {[usersError?.message, photosError?.message].filter(Boolean).join(', ')}</div>
-    );
+    return <h1>oops: {[usersError?.message, photosError?.message].filter(Boolean).join(', ')}</h1>;
   }
 
   return (
@@ -67,13 +80,17 @@ export default function UserManager() {
                 key={user.id}
                 tabIndex={i + 2}
                 setCurrentlyEditingUserId={setCurrentlyEditingUserId}
+                scrollTo={shouldScrollTo(i)}
               />
             ))}
           </div>
         )}
 
-        <div>Search term: {searchParams.get('q')}</div>
-        <div>Current page: {pageNumber}</div>
+        <div className="bottom-bar">
+          <button className="load-more" onClick={() => updateUrl({ page: page + 1 })}>
+            Load More
+          </button>
+        </div>
       </div>
       <Modal
         showModal={!!currentlyEditingUserId}

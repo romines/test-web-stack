@@ -67,6 +67,7 @@ export type Query = {
 
 
 export type QueryUsersArgs = {
+  page: Scalars['Float'];
   search?: InputMaybe<Scalars['String']>;
 };
 
@@ -92,6 +93,7 @@ export type User = {
 
 export type GetUsersQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']>;
+  page: Scalars['Float'];
 }>;
 
 
@@ -119,8 +121,8 @@ export type GetPhotosQuery = { __typename?: 'Query', getPhotos: Array<{ __typena
 
 
 export const GetUsersDocument = gql`
-    query GetUsers($search: String) {
-  users(search: $search) {
+    query GetUsers($search: String, $page: Float!) {
+  users(search: $search, page: $page) {
     name
     id
     dob
@@ -149,10 +151,11 @@ export const GetUsersDocument = gql`
  * const { data, loading, error } = useGetUsersQuery({
  *   variables: {
  *      search: // value for 'search'
+ *      page: // value for 'page'
  *   },
  * });
  */
-export function useGetUsersQuery(baseOptions?: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
+export function useGetUsersQuery(baseOptions: Apollo.QueryHookOptions<GetUsersQuery, GetUsersQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetUsersQuery, GetUsersQueryVariables>(GetUsersDocument, options);
       }

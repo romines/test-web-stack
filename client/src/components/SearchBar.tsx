@@ -1,18 +1,21 @@
 import React from 'react';
 
+import  { SearchParams } from './UserManager';
+
 interface IProps {
   initialQuery: string;
-  updateUrl: (s: string) => void;
+  updateUrl: (params: SearchParams) => void;
 }
 
 export default function SearchBar({ updateUrl, initialQuery }: IProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    updateUrl(e.target.value);
+    updateUrl({ q: e.target.value });
   };
   return (
     <div>
       <input
         placeholder="Search..."
+        id="userSearch"
         onChange={(e) => handleChange(e)}
         value={initialQuery}
         tabIndex={1}
