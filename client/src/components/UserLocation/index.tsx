@@ -3,6 +3,8 @@
  *
  */
 
+import './styles.scss';
+
 import { Status, Wrapper } from '@googlemaps/react-wrapper';
 import { isLatLngLiteral } from '@googlemaps/typescript-guards';
 import { createCustomEqual } from 'fast-equals';
@@ -43,7 +45,7 @@ export default function UserLocation({ address }: IProps) {
   };
 
   return (
-    <div style={{ display: 'flex', height: '100%' }}>
+    <div className="map-container">
       <Wrapper apiKey={process.env.REACT_APP_GMAPS_API_KEY as string} render={render}>
         <Map
           center={center}
@@ -53,6 +55,11 @@ export default function UserLocation({ address }: IProps) {
           setGeocoder={setGeocoder}
           setMap={setMap}
           style={{ flexGrow: '1', height: '100%' }}
+          streetViewControl={false}
+          mapTypeControl={false}
+          fullscreenControl={false}
+          zoomControl={false}
+          gestureHandling={'none'}
         >
           <Marker position={center} />
         </Map>
@@ -143,8 +150,6 @@ const deepCompareEqualsForMaps = createCustomEqual((deepEqual) => (a: any, b: an
   ) {
     return new google.maps.LatLng(a).equals(new google.maps.LatLng(b));
   }
-
-  // TODO extend to other types
 
   // use fast-equals for other objects
   return deepEqual(a, b);

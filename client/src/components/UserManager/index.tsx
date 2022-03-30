@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export default function UserManager() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialQuery = searchParams.get('q') ?? undefined;
+  const initialQuery = searchParams.get('q') ?? '';
   const updateUrl = (userQuery: string): void => {
     setSearchParams({ q: userQuery });
   };
@@ -49,7 +49,7 @@ export default function UserManager() {
     <div className="user-manager">
       <div className="inner-container">
         <div className="top-bar">
-          <h1>Users</h1>
+          <h1>Users list</h1>
           <SearchBar updateUrl={updateUrl} initialQuery={initialQuery} />
         </div>
 
@@ -74,13 +74,16 @@ export default function UserManager() {
       >
         {currentlyEditingUser && (
           <div className="edit-container">
-            <UserLocation address={userAddress} />
-            <UserForm
-              user={currentlyEditingUser}
-              updateUser={updateUser}
-              setUserAddress={setUserAddress}
-              cancel={() => setCurrentlyEditingUserId(null)}
-            />
+            <h1>Users list</h1>
+            <div className="inner-container">
+              <UserLocation address={userAddress} />
+              <UserForm
+                user={currentlyEditingUser}
+                updateUser={updateUser}
+                setUserAddress={setUserAddress}
+                cancel={() => setCurrentlyEditingUserId(null)}
+              />
+            </div>
           </div>
         )}
       </Modal>

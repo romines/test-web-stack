@@ -48,7 +48,9 @@
   }
 
   .edit-container {
-    height: 500px;
+    .inner-container {
+      display: flex;
+    }
   }
 
 }

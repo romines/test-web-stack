@@ -1,12 +1,12 @@
 import React from 'react';
 
 interface IProps {
-  initialQuery: string | undefined;
+  initialQuery: string;
   updateUrl: (s: string) => void;
 }
 
 export default function SearchBar({ updateUrl, initialQuery }: IProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     updateUrl(e.target.value);
   };
   return (
