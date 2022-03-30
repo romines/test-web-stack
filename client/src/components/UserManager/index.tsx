@@ -14,10 +14,16 @@ export default function UserManager() {
   };
   const offset = searchParams.get('offset');
   const limit = searchParams.get('limit');
+  const searchUsersQuery = searchParams.get('q');
   const pageNumber = offset && limit ? parseInt(offset) / parseInt(limit) + 1 : 'one';
 
-  const { data: userData, loading: usersLoading, error: usersError } = useGetUsersQuery();
+  const {
+    data: userData,
+    loading: usersLoading,
+    error: usersError,
+  } = useGetUsersQuery(searchUsersQuery ? { variables: { search: searchUsersQuery } } : {});
   const { data: photoData, loading: photosLoading, error: photosError } = useGetPhotosQuery();
+  const photos = photoData?.getPhotos.map(({ url }) => url) || [];
 
   const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
   const [userAddress, setUserAddress] = useState<string | null>(null);
@@ -36,15 +42,12 @@ export default function UserManager() {
     }
   }, [currentlyEditingUserId, currentlyEditingUser?.address]);
 
-  if (usersLoading || photosLoading) {
-    return <div>loading...</div>;
-  } else if (usersError || photosError) {
+  if (usersError || photosError) {
     return (
       <div>oops: {[usersError?.message, photosError?.message].filter(Boolean).join(', ')}</div>
     );
   }
 
-  const photos = photoData?.getPhotos.map(({ url }) => url) || [];
   return (
     <div className="user-manager">
       <div className="inner-container">
@@ -53,17 +56,21 @@ export default function UserManager() {
           <SearchBar updateUrl={updateUrl} initialQuery={initialQuery} />
         </div>
 
-        <div className="card-container">
-          {userData?.users?.map((user, i) => (
-            <UserCard
-              user={user}
-              photo={photos[i]}
-              key={user.id}
-              tabIndex={i + 2}
-              setCurrentlyEditingUserId={setCurrentlyEditingUserId}
-            />
-          ))}
-        </div>
+        {usersLoading || photosLoading ? (
+          <div>loading...</div>
+        ) : (
+          <div className="card-container">
+            {userData?.users?.map((user, i) => (
+              <UserCard
+                user={user}
+                photo={photos[parseInt(user.id)]}
+                key={user.id}
+                tabIndex={i + 2}
+                setCurrentlyEditingUserId={setCurrentlyEditingUserId}
+              />
+            ))}
+          </div>
+        )}
 
         <div>Search term: {searchParams.get('q')}</div>
         <div>Current page: {pageNumber}</div>

@@ -2,18 +2,20 @@ import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
 import * as Express from 'express';
 import { buildSchema } from 'type-graphql';
-import { createConnection } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 import { UserResolver } from './resolvers/userResolver';
 import { PhotoResolver } from './resolvers/photoResolver';
 
+export const dataSource = new DataSource({
+  type: 'sqlite',
+  database: './db.sqlite3',
+  entities: ['./src/models/*.ts'],
+  synchronize: true,
+});
+
 async function main() {
-  await createConnection({
-    type: 'sqlite',
-    database: './db.sqlite3',
-    entities: ['./src/models/*.ts'],
-    synchronize: true,
-  });
+  await dataSource.initialize();
   const schema = await buildSchema({
     resolvers: [UserResolver, PhotoResolver],
     emitSchemaFile: true,

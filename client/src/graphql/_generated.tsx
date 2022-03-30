@@ -65,6 +65,11 @@ export type Query = {
   users: Array<User>;
 };
 
+
+export type QueryUsersArgs = {
+  search?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateUserInput = {
   address?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
@@ -85,7 +90,9 @@ export type User = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type GetUsersQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetUsersQueryVariables = Exact<{
+  search?: InputMaybe<Scalars['String']>;
+}>;
 
 
 export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', name: string, id: string, dob: string, address: string, description: string, createdAt: any, updatedAt: any, photo?: { __typename?: 'Photo', url: string, id: string } | null }> };
@@ -112,8 +119,8 @@ export type GetPhotosQuery = { __typename?: 'Query', getPhotos: Array<{ __typena
 
 
 export const GetUsersDocument = gql`
-    query GetUsers {
-  users {
+    query GetUsers($search: String) {
+  users(search: $search) {
     name
     id
     dob
@@ -141,6 +148,7 @@ export const GetUsersDocument = gql`
  * @example
  * const { data, loading, error } = useGetUsersQuery({
  *   variables: {
+ *      search: // value for 'search'
  *   },
  * });
  */
