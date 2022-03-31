@@ -1,5 +1,30 @@
 .user-form {
+  margin-left: 60px;
+
+  .form-group {
+    margin-bottom: 36px;
+    &:last-of-type {
+      margin-bottom: 64px;
+    }
+    input:not([type="submit"]) {
+      height: 64px;
+      width: 621px;
+    }
+  }
+
   label {
     display: block;
+    font-family: Source Sans Pro;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 23px;
+    letter-spacing: 0px;
+    text-align: left;
   }
+
+  button {
+    margin-left: 62px;
+  }
+
 }

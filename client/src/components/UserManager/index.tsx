@@ -98,7 +98,7 @@ export default function UserManager() {
       >
         {currentlyEditingUser && (
           <div className="edit-container">
-            <h1>Users list</h1>
+            <h1>Edit user</h1>
             <div className="inner-container">
               <UserLocation address={userAddress} />
               <UserForm
