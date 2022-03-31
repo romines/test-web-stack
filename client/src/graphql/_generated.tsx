@@ -62,7 +62,7 @@ export type PhotoInput = {
 export type Query = {
   __typename?: 'Query';
   getPhotos: Array<Photo>;
-  users: Array<User>;
+  users: UsersResponse;
 };
 
 
@@ -91,13 +91,19 @@ export type User = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type UsersResponse = {
+  __typename?: 'UsersResponse';
+  count: Scalars['Int'];
+  users: Array<User>;
+};
+
 export type GetUsersQueryVariables = Exact<{
   search?: InputMaybe<Scalars['String']>;
   page: Scalars['Float'];
 }>;
 
 
-export type GetUsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', name: string, id: string, dob: string, address: string, description: string, createdAt: any, updatedAt: any, photo?: { __typename?: 'Photo', url: string, id: string } | null }> };
+export type GetUsersQuery = { __typename?: 'Query', users: { __typename?: 'UsersResponse', count: number, users: Array<{ __typename?: 'User', name: string, id: string, dob: string, address: string, description: string, createdAt: any, updatedAt: any, photo?: { __typename?: 'Photo', url: string, id: string } | null }> } };
 
 export type AddUserMutationVariables = Exact<{
   userInput: NewUserInput;
@@ -123,17 +129,20 @@ export type GetPhotosQuery = { __typename?: 'Query', getPhotos: Array<{ __typena
 export const GetUsersDocument = gql`
     query GetUsers($search: String, $page: Float!) {
   users(search: $search, page: $page) {
-    name
-    id
-    dob
-    address
-    description
-    photo {
-      url
+    count
+    users {
+      name
       id
+      dob
+      address
+      description
+      photo {
+        url
+        id
+      }
+      createdAt
+      updatedAt
     }
-    createdAt
-    updatedAt
   }
 }
     `;

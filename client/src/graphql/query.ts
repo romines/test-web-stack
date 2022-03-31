@@ -3,17 +3,20 @@ import { gql } from '@apollo/client';
 export const GET_USERS = gql`
   query GetUsers($search: String, $page: Float!) {
     users(search: $search, page: $page) {
-      name
-      id
-      dob
-      address
-      description
-      photo {
-        url
+      count
+      users {
+        name
         id
+        dob
+        address
+        description
+        photo {
+          url
+          id
+        }
+        createdAt
+        updatedAt
       }
-      createdAt
-      updatedAt
     }
   }
 `;

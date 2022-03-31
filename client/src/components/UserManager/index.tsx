@@ -2,7 +2,6 @@ import './styles.scss';
 
 import { Modal, SearchBar, UserCard, UserFields, UserForm, UserLocation } from 'components';
 import {
-  refetchGetUsersQuery,
   useGetPhotosQuery,
   useGetUsersQuery,
   User,
@@ -13,45 +12,68 @@ import { useSearchParams } from 'react-router-dom';
 
 export interface SearchParams {
   q?: string;
-  page?: number;
+  page?: string;
 }
 
 export default function UserManager() {
+  /*
+   *
+   * Data fetching / persistence
+   *
+   *
+   */
+
+  // Handle user search and pagination with query string
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get('q') ?? '';
   const updateUrl = (updatedSearchParams: SearchParams): void => {
-    setSearchParams({ ...searchParams, ...updatedSearchParams });
+    const current = Object.fromEntries(searchParams.entries()) ?? {};
+    const merged = { ...current, ...updatedSearchParams };
+    setSearchParams(Object.entries(merged));
   };
   const page = parseInt(searchParams.get('page') ?? '1');
   const searchUsersQuery = searchParams.get('q');
 
+  // user data graphql query
   const {
     data: userData,
     loading: usersLoading,
     error: usersError,
-  } = useGetUsersQuery({ variables: { search: searchUsersQuery, page } });
-  const [updateUserMutation] = useUpdateUserMutation();
+  } = useGetUsersQuery({
+    variables: { page, ...(searchUsersQuery ? { search: searchUsersQuery } : {}) },
+  });
 
+  const users = userData?.users?.users ?? [];
+  const count = userData?.users?.count ?? 0;
+
+  // photos graphql query
   const { data: photoData, loading: photosLoading, error: photosError } = useGetPhotosQuery();
   const photos = photoData?.getPhotos.map(({ url }) => url) || [];
 
+  // user update mutation
+  const [updateUserMutation] = useUpdateUserMutation();
+
+  // scroll the last user card into view in order to save users place on page reload
+  // (disable for fist page load and around filter/search)
   const shouldScrollTo = (i: number): boolean => {
-    // scroll the last user card into view in order to save users place on page reload
-    // (disable for fist page load and around filter/search)
     return !!(
-      userData &&
-      userData?.users?.length !== 6 &&
-      i === userData?.users?.length - 1 &&
-      document.activeElement?.id !== 'userSearch' &&
-      !searchUsersQuery
+      users?.length !== 6 &&
+      i === users?.length - 1 &&
+      document.activeElement?.id !== 'userSearch'
     );
   };
 
+  /*
+   *
+   * Local state and user editing
+   *
+   *
+   */
   const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
   const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [currentlyEditingUser] = userData?.users.filter(
-    (u: User) => u.id === currentlyEditingUserId
-  ) ?? [null];
+  const [currentlyEditingUser] = users.filter((u: User) => u.id === currentlyEditingUserId) ?? [
+    null,
+  ];
 
   const updateUser = (updatedUserData: UserFields) => {
     updateUserMutation({
@@ -69,6 +91,13 @@ export default function UserManager() {
     }
   }, [currentlyEditingUserId, currentlyEditingUser?.address]);
 
+  /*
+   *
+   * Rendering
+   *
+   *
+   */
+
   if (usersError || photosError) {
     return <h1>oops: {[usersError?.message, photosError?.message].filter(Boolean).join(', ')}</h1>;
   }
@@ -85,7 +114,7 @@ export default function UserManager() {
           <div>loading...</div>
         ) : (
           <div className="card-container">
-            {userData?.users?.map((user, i) => (
+            {users?.map((user, i) => (
               <UserCard
                 user={user}
                 photo={photos[parseInt(user.id)]}
@@ -99,9 +128,11 @@ export default function UserManager() {
         )}
 
         <div className="bottom-bar">
-          <button className="load-more" onClick={() => updateUrl({ page: page + 1 })}>
-            Load More
-          </button>
+          {count > users.length && (
+            <button className="load-more" onClick={() => updateUrl({ page: `${page + 1}` })}>
+              Load More
+            </button>
+          )}
         </div>
       </div>
       <Modal

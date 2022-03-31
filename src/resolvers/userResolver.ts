@@ -1,24 +1,38 @@
-import { Query, Resolver, Mutation, Arg } from 'type-graphql';
+import { Arg, Field, Int, Mutation, ObjectType, Query, Resolver } from 'type-graphql';
 import { User, NewUserInput, UpdateUserInput } from '../models/User';
 import { Photo } from '../models/Photo';
 import { ILike } from 'typeorm';
 import { dataSource } from '..';
 
+@ObjectType()
+class UsersResponse {
+  @Field((_type) => [User])
+  users: User[];
+
+  @Field((_type) => Int)
+  count: number;
+}
+
 @Resolver((_of) => User)
 export class UserResolver {
-  @Query(() => [User])
-  async users(@Arg('page') page: number, @Arg('search', { nullable: true }) search?: string): Promise<User[]> {
-    // const skip = 10 - page * 10;
+  @Query(() => UsersResponse)
+  async users(
+    @Arg('page') page: number,
+    @Arg('search', { nullable: true }) search?: string,
+  ): Promise<{ users: User[]; count: number }> {
+    const where = {
+      ...(search ? { name: ILike(`%${search}%`) } : {}),
+    };
     const take = page * 6;
-    if (!search) {
-      return User.find({
-        skip: 0,
-        take,
-      });
-    }
-    return dataSource.getRepository(User).findBy({
-      name: ILike(`%${search}%`),
+    const [users, count] = await dataSource.getRepository(User).findAndCount({
+      order: {
+        name: 'DESC',
+      },
+      where,
+      take,
+      skip: 0,
     });
+    return { users, count };
   }
 
   @Mutation((_returns) => User)
