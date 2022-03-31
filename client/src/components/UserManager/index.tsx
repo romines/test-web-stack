@@ -1,8 +1,13 @@
 import './styles.scss';
 
 import { Modal, SearchBar, UserCard, UserFields, UserForm, UserLocation } from 'components';
-import { useGetPhotosQuery, useGetUsersQuery } from 'graphql/_generated';
-import { User } from 'graphql/_generated';
+import {
+  refetchGetUsersQuery,
+  useGetPhotosQuery,
+  useGetUsersQuery,
+  User,
+  useUpdateUserMutation,
+} from 'graphql/_generated';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -25,6 +30,8 @@ export default function UserManager() {
     loading: usersLoading,
     error: usersError,
   } = useGetUsersQuery({ variables: { search: searchUsersQuery, page } });
+  const [updateUserMutation] = useUpdateUserMutation();
+
   const { data: photoData, loading: photosLoading, error: photosError } = useGetPhotosQuery();
   const photos = photoData?.getPhotos.map(({ url }) => url) || [];
 
@@ -46,8 +53,13 @@ export default function UserManager() {
     (u: User) => u.id === currentlyEditingUserId
   ) ?? [null];
 
-  const updateUser = ({ name, address, description }: UserFields) => {
-    console.log({ name, address, description });
+  const updateUser = (updatedUserData: UserFields) => {
+    updateUserMutation({
+      variables: {
+        data: updatedUserData,
+        updateUserId: currentlyEditingUserId as string,
+      },
+    });
     setCurrentlyEditingUserId(null);
   };
 

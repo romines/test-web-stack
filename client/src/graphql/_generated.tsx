@@ -76,7 +76,7 @@ export type UpdateUserInput = {
   description?: InputMaybe<Scalars['String']>;
   dob?: InputMaybe<Scalars['DateTime']>;
   name?: InputMaybe<Scalars['String']>;
-  photoId: Scalars['String'];
+  photoId?: InputMaybe<Scalars['String']>;
 };
 
 export type User = {
@@ -166,6 +166,9 @@ export function useGetUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<G
 export type GetUsersQueryHookResult = ReturnType<typeof useGetUsersQuery>;
 export type GetUsersLazyQueryHookResult = ReturnType<typeof useGetUsersLazyQuery>;
 export type GetUsersQueryResult = Apollo.QueryResult<GetUsersQuery, GetUsersQueryVariables>;
+export function refetchGetUsersQuery(variables: GetUsersQueryVariables) {
+      return { query: GetUsersDocument, variables: variables }
+    }
 export const AddUserDocument = gql`
     mutation AddUser($userInput: NewUserInput!) {
   addUser(userInput: $userInput) {
@@ -282,3 +285,6 @@ export function useGetPhotosLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type GetPhotosQueryHookResult = ReturnType<typeof useGetPhotosQuery>;
 export type GetPhotosLazyQueryHookResult = ReturnType<typeof useGetPhotosLazyQuery>;
 export type GetPhotosQueryResult = Apollo.QueryResult<GetPhotosQuery, GetPhotosQueryVariables>;
+export function refetchGetPhotosQuery(variables?: GetPhotosQueryVariables) {
+      return { query: GetPhotosDocument, variables: variables }
+    }

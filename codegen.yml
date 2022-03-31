@@ -4,6 +4,7 @@ generates:
   client/src/graphql/_generated.tsx:
     config:
       withHooks: true
+      withRefetchFn: true
     plugins:
       - 'typescript'
       - 'typescript-operations'
