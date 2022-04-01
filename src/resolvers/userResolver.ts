@@ -26,7 +26,7 @@ export class UserResolver {
     const take = page * 6;
     const [users, count] = await dataSource.getRepository(User).findAndCount({
       order: {
-        name: 'DESC',
+        name: 'ASC',
       },
       where,
       take,
