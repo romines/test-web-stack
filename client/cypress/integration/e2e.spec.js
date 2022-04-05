@@ -1,8 +1,15 @@
 import 'cypress-plugin-tab';
 
+function seedDb() {
+  // npx sqlite3 is not working on Node 16 for some reason, so skip seeding / cleanup on Node versions greater than 15
+  if (Cypress.config().resolvedNodeVersion && parseInt(Cypress.config().resolvedNodeVersion) < 15) {
+    cy.exec('cd .. && npm run seedDb');
+  }
+}
+
 describe('End to end tests', () => {
   before(() => {
-    cy.exec('cd .. && npm run seedDb');
+    seedDb();
   });
   it('search bar updates query string', () => {
     cy.visit('/');
@@ -63,6 +70,6 @@ describe('End to end tests', () => {
   });
 
   after(() => {
-    cy.exec('cd .. && npm run seedDb');
+    seedDb();
   });
 });

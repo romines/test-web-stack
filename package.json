@@ -9,7 +9,7 @@
     "serverDebug": "nodemon --exec node --inspect-brk -r ts-node/register src/index.ts",
     "generateClientTypes": "graphql-codegen",
     "client": "npm run start --prefix client",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "concurrently --kill-others \"npm run server\" \"BROWSER=none npm run client\" \"npm run test --prefix client\"",
     "seedDb": "npx sqlite3 db.sqlite3 < mock_user_data.sql",
     "postinstall": "cd client && npm install"
   },

@@ -71,9 +71,7 @@ export default function UserManager() {
    */
   const [currentlyEditingUserId, setCurrentlyEditingUserId] = useState<string | null>(null);
   const [userAddress, setUserAddress] = useState<string | null>(null);
-  const [currentlyEditingUser] = users.filter((u: User) => u.id === currentlyEditingUserId) ?? [
-    null,
-  ];
+  const currentlyEditingUser = users.find((u: User) => u.id === currentlyEditingUserId) ?? null;
 
   const updateUser = (updatedUserData: UserFields) => {
     updateUserMutation({
