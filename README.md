@@ -22,8 +22,8 @@ Imagine this set of features represents an MVP of a production app. Don't over e
 
 ## Running the app
 ```bash
-echo 'REACT_APP_GMAPS_API_KEY=<valid Google Maps API key>' > client/.env
 cd test-web-stack
+echo 'REACT_APP_GMAPS_API_KEY=<valid Google Maps API key>' > client/.env
 npm install
 npm run start
 ```
